@@ -2,6 +2,8 @@
 
 # Gene-Name-Tool
 
+![image](https://www.next-bioinfo.tw/wp-content/uploads/2024/11/2024-11-15-12-31-00-%E7%9A%84%E8%9E%A2%E5%B9%95%E6%93%B7%E5%9C%96.png)
+
 Gene Name Tool (gene_converter_gui) is a small and easy tool for converting between gene symbols and Ensembl gene ID. 
 All you have to do is just copy the genes from Excel or CSV files and paste them. Then click the arrow button and you will get what you need.
 
