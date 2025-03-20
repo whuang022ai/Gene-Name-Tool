@@ -11,7 +11,7 @@ All you have to do is just copy the genes from Excel or CSV files and paste them
 
 Linux x86_64 [Download Link](https://drive.usercontent.google.com/download?id=1iQ2L9Kc8fH3FoWPkdODporJ0x8aTzvAu&export=download&authuser=0)
 
-Windows [Download Link](https://drive.google.com/uc?export=download&id=1DlOW-e2bI5sTlCigK-U0fu_-7D1GXmYN)
+![](https://img.shields.io/badge/Windows-10-2376bc?style=flat-square&logo=windows&logoColor=ffffff) [Download Link](https://drive.google.com/uc?export=download&id=1DlOW-e2bI5sTlCigK-U0fu_-7D1GXmYN)
 
 # Install from python
 ```
