@@ -16,4 +16,7 @@ All you have to do is just copy the genes from Excel or CSV files and paste them
 # Install from python
 ```
 pip install PySide6
+pip install numpy
+pip install pandas
+
 ```
