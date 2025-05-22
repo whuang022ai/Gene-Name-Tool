@@ -81,6 +81,7 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
                 qc_output_NaN_num+=1
                 frames.append(empty_row)
     filter_df = pd.concat(frames)
-    print(f"empty lines of output (NaN not match): {qc_output_NaN_num}")
+    print(f"total lines of input: {len(lines)}")
+    print(f"empty lines of output (NaN of no match): {qc_output_NaN_num}")
     unknow_ensembl_id = set(lines) - set(convert_df.index)
     return filter_df,unknow_ensembl_id
