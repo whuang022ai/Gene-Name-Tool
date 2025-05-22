@@ -43,7 +43,7 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
     lines = [line.strip() for line in lines]
     filter_df = pd.DataFrame(columns=convert_df.columns)
     frames = []
-  
+    qc_output_NaN_num=0 # empty input line number
     for line in lines:
         
         if not case_sensitive:
@@ -62,6 +62,7 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
                 frames.append(row)
             else:
                 empty_row = pd.DataFrame([[unmatch_placeholder] * len(convert_df.columns)], columns=convert_df.columns, index=[line])
+                qc_output_NaN_num+=1
                 frames.append(empty_row)
         else:
 
@@ -77,7 +78,9 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
                 frames.append(row)
             else:
                 empty_row = pd.DataFrame([[unmatch_placeholder] * len(convert_df.columns)], columns=convert_df.columns, index=[line])
+                qc_output_NaN_num+=1
                 frames.append(empty_row)
     filter_df = pd.concat(frames)
+    print(f"empty lines of output (NaN not match): {qc_output_NaN_num}")
     unknow_ensembl_id = set(lines) - set(convert_df.index)
     return filter_df,unknow_ensembl_id
