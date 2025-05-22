@@ -44,9 +44,11 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
     filter_df = pd.DataFrame(columns=convert_df.columns)
     frames = []
     total_input_num=len(lines)
-    qc_output_NaN_num=0 # empty input line number
+    qc_output_NaN_num=0 # empty output line number
+    qc_input_empty_line=0
     for line in lines:
-        
+        if not line.strip() or line in ['\n', '\r\n']:
+            qc_input_empty_line+=1
         if not case_sensitive:
             line =line.lower()
             if line in convert_df.index.str.lower():
@@ -84,8 +86,10 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
     filter_df = pd.concat(frames)
     print('\nGene Name Tool v0.0.0')
     print('---------------------------')
-    print(f"total lines of input: {total_input_num}")
-    print(f"empty lines of output (NaN of no match): {qc_output_NaN_num} , {qc_output_NaN_num/total_input_num*100:.2f} %")
+    print(f"total lines of input genes: {total_input_num}")
+    print(f'empty lines of input genes: {qc_input_empty_line} , {qc_input_empty_line/total_input_num*100:.2f} %')
+    print(f"unknow lines of output genes(NaN of no match): {qc_output_NaN_num} , {qc_output_NaN_num/total_input_num*100:.2f} %")
+    print(f"success convert rate:  {100-qc_output_NaN_num/total_input_num*100:.2f} %")
     print('---------------------------\n')
     unknow_ensembl_id = set(lines) - set(convert_df.index)
     return filter_df,unknow_ensembl_id
