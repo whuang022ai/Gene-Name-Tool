@@ -43,6 +43,7 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
     lines = [line.strip() for line in lines]
     filter_df = pd.DataFrame(columns=convert_df.columns)
     frames = []
+    total_input_num=len(lines)
     qc_output_NaN_num=0 # empty input line number
     for line in lines:
         
@@ -81,7 +82,10 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
                 qc_output_NaN_num+=1
                 frames.append(empty_row)
     filter_df = pd.concat(frames)
-    print(f"total lines of input: {len(lines)}")
-    print(f"empty lines of output (NaN of no match): {qc_output_NaN_num}")
+    print('\nGene Name Tool v0.0.0')
+    print('---------------------------')
+    print(f"total lines of input: {total_input_num}")
+    print(f"empty lines of output (NaN of no match): {qc_output_NaN_num} , {qc_output_NaN_num/total_input_num*100:.2f} %")
+    print('---------------------------\n')
     unknow_ensembl_id = set(lines) - set(convert_df.index)
     return filter_df,unknow_ensembl_id
