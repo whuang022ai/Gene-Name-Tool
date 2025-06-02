@@ -37,7 +37,7 @@ def fetch_mm_dataset():
 def fetch_hg_dataset():
     return fetch_dataset_from_file("hsapiens_gene_ensembl", "hgnc_symbol")
     
-def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeholder=np.nan):
+def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeholder=np.nan,qc_file_name=None):
     
     lines = lines.split('\n')
     lines = [line.strip() for line in lines]
@@ -84,12 +84,19 @@ def gene_ensembl_lines_to_symbol(lines,convert_df,case_sensitive,unmatch_placeho
                 qc_output_NaN_num+=1
                 frames.append(empty_row)
     filter_df = pd.concat(frames)
-    print('\nGene Name Tool v0.0.0')
-    print('---------------------------')
-    print(f"total lines of input genes: {total_input_num}")
-    print(f'empty lines of input genes: {qc_input_empty_line} , {qc_input_empty_line/total_input_num*100:.2f} %')
-    print(f"unknow lines of output genes(NaN of no match): {qc_output_NaN_num} , {qc_output_NaN_num/total_input_num*100:.2f} %")
-    print(f"success convert rate:  {100-qc_output_NaN_num/total_input_num*100:.2f} %")
-    print('---------------------------\n')
+    qc_summary =\
+    f"""
+    Gene Name Tool v0.0.0
+    ---------------------------
+    Total lines of input genes: {total_input_num}
+    Empty lines of input genes: {qc_input_empty_line} , {qc_input_empty_line/total_input_num*100:.2f} %
+    Unknown lines of output genes (NaN or no match): {qc_output_NaN_num} , {qc_output_NaN_num/total_input_num*100:.2f} %
+    Success conversion rate:  {100 - qc_output_NaN_num/total_input_num*100:.2f} %
+    ---------------------------
+    """
+    if qc_file_name:
+        with open(qc_file_name, 'w') as f:
+            f.write(qc_summary)
+    print(qc_summary)
     unknow_ensembl_id = set(lines) - set(convert_df.index)
     return filter_df,unknow_ensembl_id

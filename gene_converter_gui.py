@@ -15,7 +15,7 @@ os.environ["QT_LOGGING_RULES"] = "*.debug=false;qt.qpa.*=false"
 class ConvertThread(QThread):
     update_signal = Signal(str)
     finished = Signal()
-    def __init__(self, input_text,convert_df,status_bar,is_output_file,case_sensitive,use_nan, parent=None):
+    def __init__(self, input_text,convert_df,status_bar,is_output_file,case_sensitive,use_nan,use_qc, parent=None):
         super().__init__(parent)
         self.input_text = input_text 
         self.convert_df=convert_df
@@ -23,12 +23,16 @@ class ConvertThread(QThread):
         self.is_output_file=is_output_file
         self.case_sensitive=case_sensitive
         self.use_nan=use_nan
+        self.use_qc=use_qc
     def run(self):
         self.status_bar.showMessage("Running ... ")
         unmatch_placeholder=""
+        qc_fname=None
         if self.use_nan:
             unmatch_placeholder=np.nan
-        filter_df,unknow_ensembl_id=gene.gene_ensembl_lines_to_symbol(self.input_text,self.convert_df,self.case_sensitive,unmatch_placeholder=unmatch_placeholder)
+        if self.use_qc:
+            qc_fname="convert_qc.txt"
+        filter_df,unknow_ensembl_id=gene.gene_ensembl_lines_to_symbol(self.input_text,self.convert_df,self.case_sensitive,unmatch_placeholder=unmatch_placeholder,qc_file_name=qc_fname)
         
         print(filter_df)
         filter_df=filter_df[filter_df.columns]
@@ -52,6 +56,7 @@ class MainWindow(QMainWindow):
         self.case_sensitive=False
         self.generate_outputfile=False
         self.use_nan=True
+        self.use_qc=True
         menu = self.menuBar()
 
         about_menu = menu.addMenu("&Help")
@@ -114,9 +119,16 @@ class MainWindow(QMainWindow):
         self.use_nan_checkbox.setChecked(True)
         self.use_nan_checkbox.clicked.connect(self.update_use_nan)
         #
+                # use nan or not checkbox
+        self.use_qc_file_checkbox=QCheckBox()
+        self.use_qc_file_checkbox.setText('output convert QC file')
+        self.use_qc_file_checkbox.setChecked(True)
+        self.use_qc_file_checkbox.clicked.connect(self.update_qc_f)
+        
         layout.addRow(self.case_sensitive_checkbox)
         layout.addRow(self.outputfile_checkbox)
         layout.addRow(self.use_nan_checkbox)
+        layout.addRow(self.use_qc_file_checkbox)
         convertButtonEnsembltoSymbol = QPushButton("⇨")
         #layout.addRow(convertButtonEnsembltoSymbol)
         center_layout.addWidget(convertButtonEnsembltoSymbol)
@@ -161,12 +173,16 @@ class MainWindow(QMainWindow):
     def update_use_nan(self):
         self.use_nan =self.use_nan_checkbox.isChecked()  
     
+    def update_qc_f(self):
+        self.use_qc =self.use_qc_file_checkbox.isChecked()  
+        print(self.use_qc)
+        
     def update_generate_outputfile(self):
         self.generate_outputfile=self.outputfile_checkbox.isChecked()
     def convert_ensemblid_to_symbol(self):
         self.GeneSymbolTextEdit.setPlainText("")
         input_text = self.EnsemblTextEdit.toPlainText()
-        self.convert_thread = ConvertThread(input_text=input_text,convert_df=self.df[0],status_bar=self.status_bar,is_output_file=self.generate_outputfile,case_sensitive=self.case_sensitive,use_nan=self.use_nan)
+        self.convert_thread = ConvertThread(input_text=input_text,convert_df=self.df[0],status_bar=self.status_bar,is_output_file=self.generate_outputfile,case_sensitive=self.case_sensitive,use_nan=self.use_nan,use_qc=self.use_qc)
         self.convert_thread.update_signal.connect(self.update_result)
         self.convert_thread.start()
         self.convert_thread.finished.connect(self.on_task_finished)
@@ -175,7 +191,7 @@ class MainWindow(QMainWindow):
 
         self.EnsemblTextEdit.setPlainText("")
         input_text = self.GeneSymbolTextEdit.toPlainText()
-        self.convert_thread = ConvertThread(input_text=input_text,convert_df=self.df[1],status_bar=self.status_bar,is_output_file=self.generate_outputfile,case_sensitive=self.case_sensitive,use_nan=self.use_nan)
+        self.convert_thread = ConvertThread(input_text=input_text,convert_df=self.df[1],status_bar=self.status_bar,is_output_file=self.generate_outputfile,case_sensitive=self.case_sensitive,use_nan=self.use_nan,use_qc=self.use_qc)
         self.convert_thread.update_signal.connect(self.update_result2)
         self.convert_thread.start()
         self.convert_thread.finished.connect(self.on_task_finished)
