@@ -21,3 +21,6 @@ pip install pandas
 pip install biomart
 
 ```
+# Reference
+
+- How to add lines numbers to QTextEdit? , https://stackoverflow.com/a/74117643 
